@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" value="width=device-width, initial-scale=1">
+
+<style>
+	body {
+		font-family: sans-serif;
+		padding: 10px;
+	}
+
+	.field {
+		margin: 15px 0;
+	}
+
+	.field input {
+		display: block;
+		text-align: right;
+		font-size: 16px;
+		padding: 8px;
+		width: 150px;
+	}
+</style>
+
+<h2>Afstandsbepaling</h2>
+
+<div class="field">
+	<label for="width">Breedte (m)</label>
+	<input id="width">
+</div>
+
+<div class="field">
+	<label for="mills">Mills</label>
+	<input id="mills">
+</div>
+
+<div class="field">
+	<label for="distance">Afstand (m)</label>
+	<input id="distance" readonly>
+</div>
+
+<h2>Inschieten</h2>
+
+<div class="field">
+	<label for="angle">Kompashoek</label>
+	<input id="angle">
+</div>
+
+<div class="field">
+	<label for="geoToCompass">MN naar GN</label>
+	<input id="geoToCompass">
+</div>
+
+<div class="field">
+	<label for="yearlyChange">GN naar Oost p/j</label>
+	<input id="yearlyChange">
+</div>
+
+<div class="field">
+	<label for="years">Jaren sinds kaart</label>
+	<input id="years">
+</div>
+
+<div class="field">
+	<label for="outAngle">Gedraaide kaarthoek</label>
+	<input id="outAngle" readonly>
+</div>
+
+<script>
+(function() {
+	'use strict';
+
+	var widthField = document.getElementById('width');
+	var millsField = document.getElementById('mills');
+	var distanceField = document.getElementById('distance');
+
+	var angleField = document.getElementById('angle');
+	var geoToCompassField = document.getElementById('geoToCompass');
+	var yearlyChangeField = document.getElementById('yearlyChange');
+	var outAngleField = document.getElementById('outAngle');
+	var yearsField = document.getElementById('years');
+
+	function recalculate() {
+		var width = parseFloat(widthField.value);
+		var mills = parseFloat(millsField.value);
+		var distance = width * 1000 / mills;
+
+		if (isNaN(distance)) {
+			distanceField.value = '';
+		} else {
+			distanceField.value = Math.round(distance);
+		}
+
+		var angle = parseFloat(angleField.value);
+		var geoToCompass = parseFloat(geoToCompassField.value) || 0;
+		var yearlyChange = parseFloat(yearlyChangeField.value) || 0;
+		var years = parseFloat(yearsField.value) || 0;
+		var outAngle = (
+				angle - geoToCompass
+				- yearlyChange * years
+				+ 3200
+			) % 6400;
+
+		if (isNaN(outAngle)) {
+			outAngleField.value = '';
+		} else {
+			outAngleField.value = Math.round(outAngle);
+		}
+	}
+
+	widthField.addEventListener('change', recalculate);
+	widthField.addEventListener('keyup', recalculate);
+	millsField.addEventListener('change', recalculate);
+	millsField.addEventListener('keyup', recalculate);
+	angleField.addEventListener('change', recalculate);
+	angleField.addEventListener('keyup', recalculate);
+	geoToCompassField.addEventListener('change', recalculate);
+	geoToCompassField.addEventListener('keyup', recalculate);
+	yearlyChangeField.addEventListener('change', recalculate);
+	yearlyChangeField.addEventListener('keyup', recalculate);
+	yearsField.addEventListener('change', recalculate);
+	yearsField.addEventListener('keyup', recalculate);
+})();
+</script>
